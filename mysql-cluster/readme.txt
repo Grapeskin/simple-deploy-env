@@ -30,3 +30,4 @@ CREATE TABLE `dbtablesplite`.`test`( `id` INT NOT NULL, `name` VARCHAR(64), PRIM
 
 3.验证分库分表、读写分离
 往表里添加数据，查看mycat服务的日志输出
+
