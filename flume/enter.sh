@@ -1,0 +1,1 @@
+docker exec -it $(docker ps | grep flume | awk '{print $1}') bash

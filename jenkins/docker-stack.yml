@@ -1,0 +1,29 @@
+version: "3.7"
+services:
+  jenkins:
+    image: jenkins/jenkins:lts
+    hostname: jenkins
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - home:/var/jenkins_home
+      
+    environment:
+      - TZ=Asia/Shanghai
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node2"
+      restart_policy:
+        condition: on-failure
+    networks:
+      - cluster-net
+networks:
+  cluster-net:
+    external: true
+volumes:
+  home:
+    driver: local

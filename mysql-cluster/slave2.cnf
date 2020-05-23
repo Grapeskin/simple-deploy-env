@@ -1,0 +1,14 @@
+[mysqld]
+server_id = 3
+log-bin= mysql-bin
+#read-only=1
+# 指定同步的数据库
+#binlog-do-db=test_db
+# dbtablesplite为分库分表不同步
+replicate-ignore-db=dbtablesplite
+replicate-ignore-db=mysql
+replicate-ignore-db=sys
+replicate-ignore-db=information_schema
+replicate-ignore-db=performance_schema
+#!includedir /etc/mysql/conf.d/
+

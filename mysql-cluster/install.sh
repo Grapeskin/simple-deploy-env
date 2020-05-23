@@ -1,0 +1,1 @@
+docker stack deploy mysql-cluster -c docker-stack.yml

@@ -1,0 +1,129 @@
+version: "3.7"
+services:
+  mysql1:
+    image: mysql:5.7.22
+    hostname: mysql1
+    environment:
+      - TZ=Asia/Shanghai
+      - MYSQL_ROOT_PASSWORD=123456 
+    volumes:
+      - type: volume  
+        source: data
+        target: /var/lib/mysql
+    configs:
+      - source: master-conf
+        target: /etc/mysql/conf.d/master.cnf
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node1"
+      restart_policy:
+        condition: on-failure
+      endpoint_mode: dnsrr
+    networks:
+      - cluster-net
+  mysql2:
+    image: mysql:5.7.22
+    hostname: mysql2
+    environment:
+      - TZ=Asia/Shanghai
+      - MYSQL_ROOT_PASSWORD=123456 
+    volumes:
+      - type: volume  
+        source: data
+        target: /var/lib/mysql
+    configs:
+      - source: slave1-conf
+        target: /etc/mysql/conf.d/slave1.cnf
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node2"
+      restart_policy:
+        condition: on-failure
+      endpoint_mode: dnsrr
+    networks:
+      - cluster-net
+  mysql3:
+    image: mysql:5.7.22
+    hostname: mysql3
+    environment:
+      - TZ=Asia/Shanghai
+      - MYSQL_ROOT_PASSWORD=123456 
+    volumes:
+      - type: volume  
+        source: data
+        target: /var/lib/mysql
+    configs:
+      - source: slave2-conf
+        target: /etc/mysql/conf.d/slave2.cnf
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node3"
+      restart_policy:
+        condition: on-failure
+      endpoint_mode: dnsrr
+    networks:
+      - cluster-net
+  mycat:
+    image: longhronshens/mycat-docker:latest
+    hostname: mycat
+    ports:
+      - "8066:8066"
+      - "9066:9066"
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - type: volume  
+        source: conf
+        target: /usr/local/mycat/conf
+    configs:
+      - source: server-xml
+        target: /usr/local/mycat/conf/server.xml
+      - source: schema-xml
+        target: /usr/local/mycat/conf/schema.xml
+      - source: rule-xml
+        target: /usr/local/mycat/conf/rule.xml
+      - source: log4j2-xml
+        target: /usr/local/mycat/conf/log4j2.xml
+        
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node1"
+      restart_policy:
+        condition: on-failure
+    networks:
+      - cluster-net
+networks:
+  cluster-net:
+    external: true
+volumes:
+  data:
+    driver: local
+  conf:
+    driver: local
+configs:
+  master-conf:
+    file: ./master.cnf
+  slave1-conf:
+    file: ./slave1.cnf
+  slave2-conf:
+    file: ./slave2.cnf
+  server-xml:
+    file: ./server.xml
+  schema-xml:
+    file: ./schema.xml
+  rule-xml:
+    file: ./rule.xml
+  log4j2-xml:
+    file: ./log4j2.xml

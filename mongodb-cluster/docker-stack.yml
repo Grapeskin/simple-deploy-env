@@ -1,0 +1,346 @@
+version: '3.7'
+
+services:
+  cs1:
+    image: mongo:3.4
+    hostname: cs1
+    command: mongod -f /opt/cs.conf
+    volumes:
+      - type: volume
+        source: mongo-cs-data
+        target: /data/db
+    environment:
+      - TZ=Asia/Shanghai
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node1"
+      restart_policy:
+        condition: none
+    configs:
+      - source: cs-config
+        target: /opt/cs.conf
+    networks:
+      - cluster-net
+  cs2:
+    image: mongo:3.4
+    hostname: cs2
+    command: mongod -f /opt/cs.conf
+    volumes:
+      - type: volume
+        source: mongo-cs-data
+        target: /data/db
+    environment:
+      - TZ=Asia/Shanghai
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node2"
+      restart_policy:
+        condition: on-failure
+    configs:
+      - source: cs-config
+        target: /opt/cs.conf
+    networks:
+      - cluster-net
+  cs3:
+    image: mongo:3.4
+    hostname: cs3
+    command: mongod -f /opt/cs.conf
+    volumes:
+      - type: volume
+        source: mongo-cs-data
+        target: /data/db
+    environment:
+      - TZ=Asia/Shanghai
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node3"
+      restart_policy:
+        condition: on-failure
+    configs:
+      - source: cs-config
+        target: /opt/cs.conf
+    networks:
+      - cluster-net
+  shard01:
+    image: mongo:3.4
+    hostname: shard01
+    command: mongod -f /opt/shard0.conf
+    volumes:
+      - type: volume
+        source: mongo-shard0-data
+        target: /data/db
+    environment:
+      - TZ=Asia/Shanghai
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node1"
+      restart_policy:
+        condition: on-failure
+    configs:
+      - source: shard0-config
+        target: /opt/shard0.conf
+    networks:
+      - cluster-net
+    depends_on:
+      - shard02
+      - shard03
+  shard02:
+    image: mongo:3.4
+    hostname: shard02
+    command: mongod -f /opt/shard0.conf
+    volumes:
+      - type: volume
+        source: mongo-shard0-data
+        target: /data/db
+    environment:
+      - TZ=Asia/Shanghai
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node2"
+      restart_policy:
+        condition: on-failure
+    configs:
+      - source: shard0-config
+        target: /opt/shard0.conf
+    networks:
+      - cluster-net
+  shard03:
+    image: mongo:3.4
+    hostname: shard03
+    command: mongod -f /opt/shard0.conf
+    volumes:
+      - type: volume
+        source: mongo-shard0-data
+        target: /data/db
+    environment:
+      - TZ=Asia/Shanghai
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node3"
+      restart_policy:
+        condition: on-failure
+    configs:
+      - source: shard0-config
+        target: /opt/shard0.conf
+    networks:
+      - cluster-net
+  shard11:
+    image: mongo:3.4
+    hostname: shard11
+    command: mongod -f /opt/shard1.conf
+    volumes:
+      - type: volume
+        source: mongo-shard1-data
+        target: /data/db
+    environment:
+      - TZ=Asia/Shanghai
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node1"
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - shard12
+      - shard13
+    configs:
+      - source: shard1-config
+        target: /opt/shard1.conf
+    networks:
+      - cluster-net
+  shard12:
+    image: mongo:3.4
+    hostname: shard12
+    command: mongod -f /opt/shard1.conf
+    volumes:
+      - type: volume
+        source: mongo-shard1-data
+        target: /data/db
+    environment:
+      - TZ=Asia/Shanghai
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node2"
+      restart_policy:
+        condition: on-failure
+    configs:
+      - source: shard1-config
+        target: /opt/shard1.conf
+    networks:
+      - cluster-net
+  shard13:
+    image: mongo:3.4
+    hostname: shard13
+    command: mongod -f /opt/shard1.conf
+    volumes:
+      - type: volume
+        source: mongo-shard1-data
+        target: /data/db
+    environment:
+      - TZ=Asia/Shanghai
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node3"
+      restart_policy:
+        condition: on-failure
+    configs:
+      - source: shard1-config
+        target: /opt/shard1.conf
+    networks:
+      - cluster-net
+  shard21:
+    image: mongo:3.4
+    hostname: shard21
+    command: mongod -f /opt/shard2.conf
+    volumes:
+      - type: volume
+        source: mongo-shard2-data
+        target: /data/db
+    environment:
+      - TZ=Asia/Shanghai
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node1"
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - shard22
+      - shard23
+    configs:
+      - source: shard2-config
+        target: /opt/shard2.conf
+    networks:
+      - cluster-net
+  shard22:
+    image: mongo:3.4
+    hostname: shard22
+    command: mongod -f /opt/shard2.conf
+    volumes:
+      - type: volume
+        source: mongo-shard2-data
+        target: /data/db
+    environment:
+      - TZ=Asia/Shanghai
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node2"
+      restart_policy:
+        condition: on-failure
+    configs:
+      - source: shard2-config
+        target: /opt/shard2.conf
+    networks:
+      - cluster-net
+  shard23:
+    image: mongo:3.4
+    hostname: shard23
+    command: mongod -f /opt/shard2.conf
+    volumes:
+      - type: volume
+        source: mongo-shard2-data
+        target: /data/db
+    environment:
+      - TZ=Asia/Shanghai
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node3"
+      restart_policy:
+        condition: on-failure
+    configs:
+      - source: shard2-config
+        target: /opt/shard2.conf
+    networks:
+      - cluster-net
+  mongos:
+    image: mongo:3.4
+    hostname: mongos
+    command: mongos -f /opt/mongos.conf
+    volumes:
+      - type: volume
+        source: mongos-data
+        target: /data/db
+    environment:
+      - TZ=Asia/Shanghai
+    ports:
+      - 27017:27017
+    depends_on:
+      - cs1
+      - cs2
+      - cs3
+      - shard01
+      - shard02
+      - shard03
+      - shard11
+      - shard12
+      - shard13
+      - shard21
+      - shard22
+      - shard23
+    deploy:
+      replicas: 3
+      mode: replicated
+      restart_policy:
+        condition: on-failure
+    configs:
+      - source: mongos-config
+        target: /opt/mongos.conf
+    networks:
+      - cluster-net
+
+networks:
+  cluster-net:
+    external: true
+    
+volumes:
+  mongo-cs-data:
+  mongos-data:
+  mongo-shard0-data:
+  mongo-shard1-data:
+  mongo-shard2-data:
+
+configs:
+  cs-config:
+    file: ./cs.conf
+  mongos-config:
+    file: ./mongos.conf
+  shard0-config:
+    file: ./shard0.conf
+  shard1-config:
+    file: ./shard1.conf
+  shard2-config:
+    file: ./shard2.conf

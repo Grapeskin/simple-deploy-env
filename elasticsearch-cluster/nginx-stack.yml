@@ -1,0 +1,36 @@
+version: '3.7'
+
+services:
+  nginx:
+    image: nginx:latest
+    hostname: nginx
+    ports:
+      - "9200:80"
+    volumes:
+      - type: volume
+        source: nginx-log
+        target: /var/log/nginx
+    configs:
+      - source: nginx_config
+        target: /etc/nginx/nginx.conf
+    environment:
+      TZ: Asia/Shanghai
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node3"
+      restart_policy:
+        condition: on-failure
+    networks:
+      - cluster-net
+networks:
+  cluster-net:
+    external: true
+volumes:
+  nginx-log:
+    driver: local
+configs:
+  nginx_config:
+    file: ./conf/nginx.conf

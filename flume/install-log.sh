@@ -1,0 +1,1 @@
+docker stack deploy flume-log -c docker-stack-log.yml

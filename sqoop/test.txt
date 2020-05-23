@@ -1,0 +1,2 @@
+sqoop import --connect jdbc:mysql://mariadb1:3306/test --username root --password mariadb --table test
+sqoop export --connect jdbc:mysql://mariadb1:3306/test --username root --password mariadb --table test1  --export-dir /user/root/test

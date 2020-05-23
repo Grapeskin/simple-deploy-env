@@ -1,0 +1,35 @@
+version: '3.7'
+
+services:
+  haproxy:
+    image: haproxy:2.1.3-alpine
+    hostname: haproxy
+    ports: 
+      - "50070:50070"
+      - "8088:8088"
+    environment:
+      TZ: Asia/Shanghai
+    configs:
+      - source: haproxy-config
+        target: /usr/local/etc/haproxy/haproxy.cfg
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node1"
+      restart_policy:
+        condition: on-failure
+    command: haproxy -f /usr/local/etc/haproxy/haproxy.cfg
+    networks:
+      - cluster-net
+    depends_on:
+      - hadoop-master
+      - hadoop-slave1
+      - hadoop-slave2
+networks:
+  cluster-net:
+    external: true
+configs:
+  haproxy-config:
+    file: ./haproxy.cfg

@@ -1,0 +1,1 @@
+docker service scale sqoop-cluster_sqoop=1

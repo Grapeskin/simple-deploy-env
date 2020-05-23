@@ -1,0 +1,1 @@
+docker exec -it $(docker ps | grep sqoop | awk '{print $1}') bash

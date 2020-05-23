@@ -1,0 +1,34 @@
+version: "3.7"
+services:
+  flume1:
+    image: probablyfine/flume:latest
+    hostname: agent2
+    environment:
+      - TZ=Asia/Shanghai
+      - FLUME_AGENT_NAME=agent
+    configs:
+      - source: config
+        target: /opt/flume-config/flume.conf
+    volumes:
+      - type: volume
+        source: data
+        target: /var/log/flume
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node1"
+      restart_policy:
+        condition: on-failure
+    networks:
+      - cluster-net
+networks:
+  cluster-net:
+    external: true
+configs:
+  config:
+    file: ./taildir.conf
+volumes:
+  data:
+    driver: local

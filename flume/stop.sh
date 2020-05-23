@@ -1,0 +1,1 @@
+docker service scale flume_flume1=0

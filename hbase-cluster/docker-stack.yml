@@ -1,0 +1,73 @@
+version: '3.7'
+services:
+  hbase-master:
+    image: gradiant/hbase-master:2.0.1
+    hostname: hbase-master
+    environment:
+      - TZ=Asia/Shanghai
+      - HBASE_CONF_hbase_rootdir=hdfs://hadoop-master:9000/hbase
+      
+      - HBASE_CONF_hbase_master_port=16000
+      - HBASE_CONF_hbase_master_info_port=16010
+      - HBASE_CONF_hbase_zookeeper_quorum=zoo1:2181,zoo2:2181,zoo3:2181
+    
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node1"
+      restart_policy:
+        condition: on-failure
+      endpoint_mode: dnsrr
+    networks:
+      - cluster-net
+  hbase-region1:
+    image: gradiant/hbase-region:2.0.1
+    hostname: hbase-region1
+    environment:
+      - HBASE_CONF_hbase_rootdir=hdfs://hadoop-master:9000/hbase
+      
+      - HBASE_CONF_hbase_master=hbase-master:16000
+      - HBASE_CONF_hbase_regionserver_port=16020
+      - HBASE_CONF_hbase_regionserver_info_port=16031
+      - HBASE_CONF_hbase_zookeeper_quorum=zoo1:2181,zoo2:2181,zoo3:2181
+
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node2"
+      restart_policy:
+        condition: on-failure
+      endpoint_mode: dnsrr
+    networks:
+      - cluster-net
+  hbase-region2:
+    image: gradiant/hbase-region:2.0.1
+    hostname: hbase-region2
+    environment:
+      - HBASE_CONF_hbase_rootdir=hdfs://hadoop-master:9000/hbase
+      
+      - HBASE_CONF_hbase_master=hbase-master:16000
+      - HBASE_CONF_hbase_regionserver_port=16020
+      - HBASE_CONF_hbase_regionserver_info_port=16032
+      - HBASE_CONF_hbase_zookeeper_quorum=zoo1:2181,zoo2:2181,zoo3:2181
+
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node3"
+      restart_policy:
+        condition: on-failure
+      endpoint_mode: dnsrr
+    networks:
+      - cluster-net
+
+networks:
+  cluster-net:
+    external: true
+

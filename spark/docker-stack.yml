@@ -1,0 +1,30 @@
+version: "3.7"
+services:
+  spark:
+    image: gettyimages/spark:latest
+    hostname: spark1
+    ports:
+      - "4040:4040"
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - type: volume
+        source: mydata
+        target: /opt/data
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node1"
+      restart_policy:
+        condition: on-failure
+  
+    networks:
+      - cluster-net
+networks:
+  cluster-net:
+    external: true
+volumes:
+  mydata:
+    driver: local

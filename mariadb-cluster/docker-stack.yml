@@ -1,0 +1,92 @@
+version: "3.7"
+services:
+  mariadb1:
+    image: mariadb
+    ports:
+      - "4001:3306"
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - "node.hostname==node1"
+      restart_policy:
+        condition: on-failure
+    hostname: mariadb1
+    networks:
+      - cluster-net
+    volumes:
+      - type: volume
+        source: mariadb-data
+        target: /var/lib/mysql
+    configs:
+      - source: mariadb-config1
+        target: /etc/mysql/my.cnf
+    command: --wsrep-new-cluster
+    environment:
+      MYSQL_ROOT_PASSWORD: mariadb
+      TZ: Asia/Shanghai
+  mariadb2:
+    image: mariadb
+    ports:
+      - "4002:3306"
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - "node.hostname==node2"
+      restart_policy:
+        condition: on-failure
+    hostname: mariadb2
+    networks:
+      - cluster-net
+    volumes:
+      - type: volume
+        source: mariadb-data
+        target: /var/lib/mysql
+    configs:
+      - source: mariadb-config2
+        target: /etc/mysql/my.cnf
+    depends_on:
+      - mariadb1
+    environment:
+      MYSQL_ROOT_PASSWORD: mariadb
+      TZ: Asia/Shanghai
+  mariadb3:
+    image: mariadb
+    ports:
+      - "4003:3306"
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - "node.hostname==node3"
+      restart_policy:
+        condition: on-failure
+    hostname: mariadb3
+    networks:
+      - cluster-net
+    volumes:
+      - type: volume
+        source: mariadb-data
+        target: /var/lib/mysql
+    configs:
+      - source: mariadb-config3
+        target: /etc/mysql/my.cnf
+    depends_on:
+      - mariadb1
+    environment:
+      MYSQL_ROOT_PASSWORD: mariadb
+      TZ: Asia/Shanghai
+configs:
+  mariadb-config1:
+    file: ./mariadb1.cnf
+  mariadb-config2:
+    file: ./mariadb2.cnf
+  mariadb-config3:
+    file: ./mariadb3.cnf
+volumes:
+  mariadb-data:
+networks:
+  cluster-net:
+    external: true
+

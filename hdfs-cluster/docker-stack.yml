@@ -1,0 +1,124 @@
+version: '3.7'
+
+services:
+  hadoop-master:
+    image: kiwenlau/hadoop:1.0
+    hostname: hadoop-master
+    environment:
+      TZ: Asia/Shanghai
+    volumes:
+      - type: volume
+        source: config
+        target: /usr/local/hadoop/etc/hadoop/
+      - type: volume
+        source: namenode
+        target: /root/hdfs/namenode
+      - type: volume
+        source: datanode
+        target: /root/hdfs/datanode
+      - type: volume
+        source: logs
+        target: /usr/local/hadoop/logs
+    configs:
+      - source: init
+        target: /opt/init.sh
+      - source: core
+        target: /usr/local/hadoop/etc/hadoop/core-site.xml
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node1"
+      restart_policy:
+        condition: on-failure
+      endpoint_mode: dnsrr
+    networks:
+      - cluster-net
+    command: sh /opt/init.sh
+
+  hadoop-slave1:
+    image: kiwenlau/hadoop:1.0
+    hostname: hadoop-slave1
+    environment:
+      TZ: Asia/Shanghai
+    volumes:
+      - type: volume
+        source: config
+        target: /usr/local/hadoop/etc/hadoop/
+      - type: volume
+        source: namenode
+        target: /root/hdfs/namenode
+      - type: volume
+        source: datanode
+        target: /root/hdfs/datanode
+      - type: volume
+        source: logs
+        target: /usr/local/hadoop/logs
+    configs:
+      - source: init
+        target: /opt/init.sh
+      - source: core
+        target: /usr/local/hadoop/etc/hadoop/core-site.xml
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node2"
+      restart_policy:
+        condition: on-failure
+      endpoint_mode: dnsrr
+    networks:
+      - cluster-net
+    command: sh /opt/init.sh
+  hadoop-slave2:
+    image: kiwenlau/hadoop:1.0
+    hostname: hadoop-slave2
+    environment:
+      TZ: Asia/Shanghai
+    volumes:
+      - type: volume
+        source: config
+        target: /usr/local/hadoop/etc/hadoop/
+      - type: volume
+        source: namenode
+        target: /root/hdfs/namenode
+      - type: volume
+        source: datanode
+        target: /root/hdfs/datanode
+      - type: volume
+        source: logs
+        target: /usr/local/hadoop/logs
+    configs:
+      - source: init
+        target: /opt/init.sh
+      - source: core
+        target: /usr/local/hadoop/etc/hadoop/core-site.xml
+
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node3"
+      restart_policy:
+        condition: on-failure
+      endpoint_mode: dnsrr
+    networks:
+      - cluster-net
+    command: sh /opt/init.sh
+networks:
+  cluster-net:
+    external: true
+
+volumes:
+  config:
+  namenode:
+  datanode:
+  logs:
+configs:
+  init:
+    file: ./init.sh
+  core:
+    file: ./core-site.xml

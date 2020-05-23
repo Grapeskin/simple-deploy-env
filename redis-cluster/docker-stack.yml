@@ -1,0 +1,165 @@
+version: '3.7'
+
+services:
+  redis-1:
+    image: redis:5.0.8-alpine
+    hostname: redis-1
+    volumes:
+      - type: volume
+        source: data-1
+        target: /data
+      - type: volume
+        source: log-1
+        target: /var/log/redis
+    configs:
+      - source: redis-config
+        target: /usr/local/etc/redis/redis.conf
+    command: /usr/local/bin/redis-server /usr/local/etc/redis/redis.conf
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node1"
+      restart_policy:
+        condition: none
+      endpoint_mode: dnsrr
+    networks:
+      - cluster-net
+  redis-2:
+    image: redis:5.0.8-alpine
+    hostname: redis-2
+    volumes:
+      - type: volume
+        source: data-2
+        target: /data
+      - type: volume
+        source: log-2
+        target: /var/log/redis
+    configs:
+      - source: redis-config
+        target: /usr/local/etc/redis/redis.conf
+    command: /usr/local/bin/redis-server /usr/local/etc/redis/redis.conf
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node1"
+      restart_policy:
+        condition: none
+      endpoint_mode: dnsrr
+    networks:
+      - cluster-net
+  redis-3:
+    image: redis:5.0.8-alpine
+    hostname: redis-3
+    volumes:
+      - type: volume
+        source: data-1
+        target: /data
+      - type: volume
+        source: log-1
+        target: /var/log/redis
+    configs:
+      - source: redis-config
+        target: /usr/local/etc/redis/redis.conf
+    command: /usr/local/bin/redis-server /usr/local/etc/redis/redis.conf
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node2"
+      restart_policy:
+        condition: none
+      endpoint_mode: dnsrr
+    networks:
+      - cluster-net
+  redis-4:
+    image: redis:5.0.8-alpine
+    hostname: redis-4
+    volumes:
+      - type: volume
+        source: data-2
+        target: /data
+      - type: volume
+        source: log-2
+        target: /var/log/redis
+    configs:
+      - source: redis-config
+        target: /usr/local/etc/redis/redis.conf
+    command: /usr/local/bin/redis-server /usr/local/etc/redis/redis.conf
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node2"
+      restart_policy:
+        condition: none
+      endpoint_mode: dnsrr
+    networks:
+      - cluster-net
+  redis-5:
+    image: redis:5.0.8-alpine
+    hostname: redis-5
+    volumes:
+      - type: volume
+        source: data-1
+        target: /data
+      - type: volume
+        source: log-1
+        target: /var/log/redis
+    configs:
+      - source: redis-config
+        target: /usr/local/etc/redis/redis.conf
+    command: /usr/local/bin/redis-server /usr/local/etc/redis/redis.conf
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node3"
+      restart_policy:
+        condition: none
+      endpoint_mode: dnsrr
+    networks:
+      - cluster-net
+  redis-6:
+    image: redis:5.0.8-alpine
+    hostname: redis-6
+    volumes:
+      - type: volume
+        source: data-2
+        target: /data
+      - type: volume
+        source: log-2
+        target: /var/log/redis
+    configs:
+      - source: redis-config
+        target: /usr/local/etc/redis/redis.conf
+    command: /usr/local/bin/redis-server /usr/local/etc/redis/redis.conf
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node3"
+      restart_policy:
+        condition: none
+      endpoint_mode: dnsrr
+    networks:
+      - cluster-net
+  
+networks:
+  cluster-net:
+    external: true    
+configs:
+  redis-config:
+    file: ./redis.conf
+volumes:
+  data-1:
+  log-1:
+  data-2:
+  log-2:

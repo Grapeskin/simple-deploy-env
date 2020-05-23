@@ -1,0 +1,169 @@
+version: '3.7'
+
+services:
+  es01:
+    image: elasticsearch:7.5.2
+    hostname: es01
+
+    environment:
+      - node.name=es01
+      - cluster.name=elasticsearch
+      - discovery.seed_hosts=es02,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - TZ=Asia/Shanghai
+    volumes:
+      - type: volume
+        source: config
+        target: /usr/share/elasticsearch/config
+      - type: volume
+        source: data
+        target: /usr/share/elasticsearch/data
+      - type: volume
+        source: log
+        target: /usr/share/elasticsearch/logs
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node1"
+      restart_policy:
+        condition: on-failure
+      endpoint_mode: dnsrr
+    networks:
+      - cluster-net
+  es02:
+    image: elasticsearch:7.5.2
+    hostname: es02
+
+    environment:
+      - node.name=es02
+      - cluster.name=elasticsearch
+      - discovery.seed_hosts=es01,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - TZ=Asia/Shanghai
+    volumes:
+      - type: volume
+        source: config
+        target: /usr/share/elasticsearch/config
+      - type: volume
+        source: data
+        target: /usr/share/elasticsearch/data
+      - type: volume
+        source: log
+        target: /usr/share/elasticsearch/logs
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node2"
+      restart_policy:
+        condition: on-failure
+      endpoint_mode: dnsrr
+    networks:
+      - cluster-net
+  es03:
+    image: elasticsearch:7.5.2
+    hostname: es03
+
+    environment:
+      - node.name=es03
+      - cluster.name=elasticsearch
+      - discovery.seed_hosts=es01,es02
+      - cluster.initial_master_nodes=es01,es02,es03
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - TZ=Asia/Shanghai
+    volumes:
+      - type: volume
+        source: config
+        target: /usr/share/elasticsearch/config
+      - type: volume
+        source: data
+        target: /usr/share/elasticsearch/data
+      - type: volume
+        source: log
+        target: /usr/share/elasticsearch/logs
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node3"
+      restart_policy:
+        condition: on-failure
+      endpoint_mode: dnsrr
+    networks:
+      - cluster-net
+  kibana:
+    image: kibana:7.5.2
+    hostname: kibana
+    ports:
+      - 5601:5601
+    environment:
+      SERVER_HOST: 0.0.0.0
+      ELASTICSEARCH_HOSTS: http://es01:9200
+      TZ: Asia/Shanghai
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node2"
+      restart_policy:
+        condition: on-failure
+    
+    networks:
+      - cluster-net
+  logstash:
+    image: logstash:7.5.2
+    hostname: logstash
+    volumes:
+      - type: volume
+        source: logstash-share
+        target: /usr/share/logstash
+      - type: volume
+        source: external-log-dir
+        target: /usr/share/logstash/log-dir/
+      - type: bind
+        source: ./conf/logstash.yml
+        target: /usr/share/logstash/config/logstash.yml
+    configs:
+      - source: logstash_config
+        target: /etc/logstash/conf.d/logstash.conf
+    command: logstash -f /etc/logstash/conf.d/logstash.conf
+    environment:
+      TZ: Asia/Shanghai
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node1"
+      restart_policy:
+        condition: on-failure
+    
+    networks:
+      - cluster-net
+networks:
+  cluster-net:
+    external: true
+volumes:
+  data:
+    driver: local
+  log:
+    driver: local
+  config:
+    driver: local
+  logstash-share:
+    driver: local
+  logstash-conf:
+    driver: local
+  external-log-dir:
+    driver: local
+
+configs:
+  logstash_config:
+    file: ./conf/logstash.conf

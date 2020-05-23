@@ -1,0 +1,17 @@
+[mysqld]
+# 用于标识不同的数据库服务器，而且唯一
+server_id = 1
+# 需要启用二进制日志
+log-bin= mysql-bin
+#read-only=0
+# 指定同步的数据库
+#binlog-do-db=test_db
+# 忽略记录二进制日志的数据库
+# dbtablesplite为分库分表不同步
+replicate-ignore-db=dbtablesplite
+replicate-ignore-db=mysql
+replicate-ignore-db=sys
+replicate-ignore-db=information_schema
+replicate-ignore-db=performance_schema
+#!includedir /etc/mysql/conf.d/
+

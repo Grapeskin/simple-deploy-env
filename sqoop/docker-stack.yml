@@ -1,0 +1,28 @@
+version: "3.7"
+services:
+  sqoop:
+    image: dvoros/sqoop:latest
+    hostname: sqoop
+    ports: 
+      - "9870:9870"
+      - "8188:8088"
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - type: bind
+        source: ./jdbc
+        target: /jdbc
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node1"
+      restart_policy:
+        condition: on-failure
+    command: sh -c '/etc/bootstrap.sh;tail -f /etc/bootstrap.sh'
+    networks:
+      - cluster-net
+networks:
+  cluster-net:
+    external: true

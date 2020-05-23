@@ -1,0 +1,20 @@
+#!/bin/bash
+cd ./redis-cluster
+sh install.sh
+cd ../mongodb-cluster
+sh install.sh
+cd ../mariadb-cluster
+sh install.sh
+cd ../zookeeper-cluster
+sh install.sh
+cd ../kafka-cluster
+sh install.sh
+cd ../hdfs-cluster
+sh install.sh
+cd ../elasticsearch-cluster
+sh install.sh
+cd ../hbase-cluster
+sh install.sh
+cd ../app-deploy
+sh deploy.sh
+cd ..

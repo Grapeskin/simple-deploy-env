@@ -1,0 +1,4 @@
+10.0.0.2 - - [07/Apr/2020:17:40:45 +0800] "GET /_cat/nodes?v&pretty HTTP/1.1" 200 340 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36" "-"
+10.0.0.2 - - [07/Apr/2020:17:40:48 +0800] "GET /_cat/nodes?v&pretty HTTP/1.1" 200 340 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36" "-"
+10.0.0.2 - - [07/Apr/2020:17:40:48 +0800] "GET /favicon.ico HTTP/1.1" 200 1529 "http://192.168.133.151:9200/_cat/nodes?v&pretty" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36" "-"
+

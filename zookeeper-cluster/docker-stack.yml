@@ -1,0 +1,104 @@
+version: '3.7'
+
+services:
+  zoo1:
+    image: zookeeper:3.5.7
+    hostname: zoo1
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
+      ZOO_LOG4J_PROP: INFO,ROLLINGFILE
+    volumes:
+      - type: volume
+        source: zookeeper-data
+        target: /data
+      - type: volume
+        source: zookeeper-datalog
+        target: /datalog
+      - type: volume
+        source: zookeeper-log
+        target: /logs
+      - type: volume
+        source: zookeeper-conf
+        target: /conf
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node1"
+      restart_policy:
+        condition: on-failure
+    networks:
+      - cluster-net
+  zoo2:
+    image: zookeeper:3.5.7
+    hostname: zoo2
+    environment:
+      ZOO_MY_ID: 2
+      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
+      ZOO_LOG4J_PROP: INFO,ROLLINGFILE
+    volumes:
+      - type: volume
+        source: zookeeper-data
+        target: /data
+      - type: volume
+        source: zookeeper-datalog
+        target: /datalog
+      - type: volume
+        source: zookeeper-log
+        target: /logs
+      - type: volume
+        source: zookeeper-conf
+        target: /conf
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node2"
+      restart_policy:
+        condition: on-failure
+    networks:
+      - cluster-net
+  zoo3:
+    image: zookeeper:3.5.7
+    hostname: zoo3
+    environment:
+      ZOO_MY_ID: 3
+      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
+      ZOO_LOG4J_PROP: INFO,ROLLINGFILE
+    volumes:
+      - type: volume
+        source: zookeeper-data
+        target: /data
+      - type: volume
+        source: zookeeper-datalog
+        target: /datalog
+      - type: volume
+        source: zookeeper-log
+        target: /logs
+      - type: volume
+        source: zookeeper-conf
+        target: /conf
+
+    deploy:
+      replicas: 1
+      mode: replicated
+      placement:
+        constraints:
+          - "node.hostname==node3"
+      restart_policy:
+        condition: on-failure
+    networks:
+      - cluster-net
+volumes:
+  zookeeper-data:
+  zookeeper-datalog:
+  zookeeper-log:
+  zookeeper-conf:
+
+networks:
+  cluster-net:
+    external: true
+
